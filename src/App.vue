@@ -7,15 +7,13 @@
 
 <script>
 export default {
-  name: "app",
-  // mounted(){
-  //   this.$axios.get('https://api.github.com/users').then(res=>{
-  //     console.log(res);
-  //   })
-  // }
+  name: "app"
 };
 </script>
 
 <style>
-
+  *{
+    margin:0;
+    padding:0;
+  }
 </style>
