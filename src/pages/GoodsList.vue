@@ -7,18 +7,18 @@
       align="middle"
       class="toolTip">
       <el-col>
-        <el-button>新增</el-button>
+        <el-button @click="$router.push('/admin/goods-add')">新增</el-button>
         <el-button @click="handleMoreDel">删除</el-button>
       </el-col>
       <div>
         <el-input
           placeholder="请输入内容"
-          class="input-with-select"
-        >
+          class="input-with-select" 
+          v-model="searchvalue">
           <el-button
             slot="append"
             icon="el-icon-search"
-          ></el-button>
+            @click="handleSearch"></el-button>
         </el-input>
       </div>
     </el-row>
@@ -67,7 +67,7 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
+            @click="handleEdit(scope.row)"
           >编辑</el-button>
           <el-button
             size="mini"
@@ -77,6 +77,17 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 分页 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pageIndex"
+      :page-sizes="[5, 10, 50, 100]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="totalcount">
+    </el-pagination>
   </div>
 </template>
 
@@ -85,22 +96,28 @@ export default {
   data() {
     return {
       tableData: [],
-      ids:[]
+      ids:[],
+      totalcount:0,
+      pageIndex:1,
+      pageSize:5,
+      searchvalue:''
     }
   },
   methods: {
     // 封装获取列表的数据
     getList(){
         this.$axios({
-            url: '/admin/goods/getlist?pageIndex=1&pageSize=5&searchvalue='
+            url: `/admin/goods/getlist?pageIndex=${this.pageIndex}&pageSize=${this.pageSize}&searchvalue=${this.searchvalue}`
         }).then(res => {
-            const { message } = res.data
+            const { message,totalcount } = res.data
             this.tableData = message
+            this.totalcount = totalcount
         })
       },
     // 编辑数据
-    handleEdit(index, row) {
-      console.log(index, row);
+    handleEdit(row) {
+      console.log(row);
+      this.$router.push(`/admin/goods-edit/${row.id}`)
     },
     // 删除单行数据
     handleDelete(row) {
@@ -154,7 +171,21 @@ export default {
             return v.id
         })
         this.ids = ids
-      }
+    },
+
+    // 分页功能
+    handleSizeChange(val) {
+      this.pageSize = val
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.pageIndex=val
+      this.getList()
+    },
+    // 搜索功能
+    handleSearch(){
+      this.getList()
+    }
   },
   mounted() {
     // 组件加载后 获取数据渲染
@@ -165,7 +196,7 @@ export default {
 
 <style>
 .toolTip {
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
 .input-with-select {
   width: 300px;
@@ -176,5 +207,8 @@ export default {
 }
 .goods-title {
   font-size: 12px;
+}
+.el-pagination{
+  margin-top:20px;
 }
 </style>

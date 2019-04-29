@@ -81,6 +81,7 @@ export default {
 .el-breadcrumb {
     border-bottom:1px solid #ccc;
     padding:10px 0 15px;
+    margin-bottom:20px;
 }
 
 .page-container > .el-container {
